@@ -7,9 +7,6 @@ import { PaperClipIcon } from '@heroicons/react/20/solid'
 export default function Edit() {
     return (
         <Layout edit>
-            <Head>
-                <title>{"edit"}</title>
-            </Head>
             <div>
                 <div className="px-4 sm:px-0">
                     <h3 className="text-base font-semibold leading-7 text-gray-900">Applicant Information</h3>

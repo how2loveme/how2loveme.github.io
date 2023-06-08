@@ -5,8 +5,7 @@ import utilStyles from '../styles/utils.module.css'
 import Link from 'next/link'
 import Header from "./header";
 
-const name = '[Your Name]'
-export const siteTitle = 'Next.js Sample Website'
+export const siteTitle : string = 'how2loveme'
 
 export default function Layout({
                                    children,
@@ -31,6 +30,7 @@ export default function Layout({
                 />
                 <meta name="og:title" content={siteTitle}/>
                 <meta name="twitter:card" content="summary_large_image"/>
+                <title>{siteTitle}</title>
             </Head>
             <Header edit={edit} />
             <main className={styles.container}>{children}</main>
