@@ -1,19 +1,22 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import styles from './layout.module.css'
-import utilStyles from '../styles/utils.module.css'
 import Link from 'next/link'
-import Header from "./header";
+import Header from './header'
+import cn from 'classnames'
 
 export const siteTitle : string = 'how2loveme'
 
-export default function Layout({
-                                   children,
-                                   edit
-                               }: {
-    children: React.ReactNode
-    edit?: boolean
-}) {
+export default function Layout(
+    {
+        children,
+        edit,
+        postHome,
+    }: {
+        children: React.ReactNode
+        edit?: boolean
+        postHome?: boolean
+    }
+) {
     return (
         <>
             <Head>
@@ -33,7 +36,9 @@ export default function Layout({
                 <title>{siteTitle}</title>
             </Head>
             <Header edit={edit} />
-            <main className={styles.container}>{children}</main>
+            <main className={cn({
+                "max-w-5xl px-4 mx-8 mt-12 mb-24": postHome,
+            })}>{children}</main>
         </>
     )
 }
