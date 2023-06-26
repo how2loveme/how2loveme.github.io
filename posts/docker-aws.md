@@ -13,6 +13,8 @@ EC2 콘솔에 접속 후 아래 명령어로 운영체제를 확인한다.
 uname -a
 //Linux ip-172-31-37-206.ap-northeast-2.compute.internal 6.1.19-30.43.amzn2023.x86_64
 //#1 SMP PREEMPT_DYNAMIC Wed Mar 15 14:44:28 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+
+cat /etc/*release*
 ```
 위와 같이 리눅스이지만, 우분투나 데비안이 아니고 아마존 버전의 리눅스가 OS로 설치되어 있다.
 그래서 실제 리눅스나 VMWARE로 만든 다른 가상화 리눅스들과는 조금씩 다를 수 있다.
