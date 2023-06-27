@@ -11,7 +11,7 @@ date: '2023-06-26'
 EC2 콘솔에 접속 후 아래 명령어로 운영체제를 확인한다.
 ```linux
 uname -a
-//Linux ip-172-31-37-206.ap-northeast-2.compute.internal 6.1.19-30.43.amzn2023.x86_64
+//Linux ip-xxx.ap-northeast-2.compute.internal 6.1.19-30.43.amzn2023.x86_64
 //#1 SMP PREEMPT_DYNAMIC Wed Mar 15 14:44:28 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
 
 cat /etc/*release*
