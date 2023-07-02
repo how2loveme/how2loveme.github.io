@@ -1,4 +1,3 @@
-
 ---
 title: 'Two Forms of Pre-rendering2'
 date: '2022-01-01'
