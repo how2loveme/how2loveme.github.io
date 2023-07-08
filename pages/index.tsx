@@ -23,19 +23,21 @@ export default function Home({
     const octokit = new Octokit({
       auth: process.env.BLOG_TOKEN,
     })
-
-    const res = await octokit.request(
-      'PUT /repos/{owner}/{repo}/contents/{path}',
-      {
-        owner: 'how2loveme',
-        repo: 'how2loveme.github.io',
-        path: 'posts/test44.md',
-        message: 'my commit message4',
-        committer: {
-          name: 'how2loveme',
-          email: 'kimjinsub01@naver.com',
-        },
-        content: btoa(`---
+    console.log('kungs', process.env.BLOG_TOKEN)
+    debugger
+    if (false) {
+      const res = await octokit.request(
+        'PUT /repos/{owner}/{repo}/contents/{path}',
+        {
+          owner: 'how2loveme',
+          repo: 'how2loveme.github.io',
+          path: 'posts/test44.md',
+          message: 'my commit message4',
+          committer: {
+            name: 'how2loveme',
+            email: 'kimjinsub01@naver.com',
+          },
+          content: btoa(`---
 title: 'Two Forms of Pre-rendering4'
 date: '2022-01-01'
 ---
@@ -48,11 +50,12 @@ Next.js has two forms of pre-rendering: **Static Generation** and **Server-side 
 Importantly, Next.js lets you **choose** which pre-rendering form to use for each page. You can create a "hybrid" Next.js app by using Static Generation for most pages and using Server-side Rendering for others.
 
       `),
-        headers: {
-          'X-GitHub-Api-Version': '2022-11-28',
-        },
-      }
-    )
+          headers: {
+            'X-GitHub-Api-Version': '2022-11-28',
+          },
+        }
+      )
+    }
   }
   return (
     <Layout>

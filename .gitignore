@@ -26,3 +26,7 @@ yarn-error.log*
 
 # intelliJ
 .idea
+
+# env
+.env
+next.config.js
