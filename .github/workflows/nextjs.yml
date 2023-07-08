@@ -73,11 +73,14 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
+      - name: Set nextjs config
+        run: |
+           echo "module.exports = {env: {BLOG_TOKEN:$BLOG_TOKEN,},}" >> next.config.js
+        env:
+          BLOG_TOKEN: ${{ secrets.BLOG_TOKEN }}
       - name: Build with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
       - name: Static HTML export with Next.js
-        env:
-          BLOG_TOKEN: ${{ secrets.BLOG_TOKEN }}
         run: ${{ steps.detect-package-manager.outputs.runner }} next export
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
