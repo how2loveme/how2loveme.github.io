@@ -73,7 +73,7 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
       - name: Set nextjs config ${{ secrets.BLOG_TOKEN }} @${{ secrets.BLOG_TOKEN }}
         run: |
-           echo "module.exports = {env: {BLOG_TOKEN:$BLOG_TOKEN2,},}" >> next.config.js
+          echo "module.exports = {env: {BLOG_TOKEN:${{ BLOG_TOKEN2 }} ,},}" >> next.config.js
         env: 
           BLOG_TOKEN: ${{ secrets.BLOG_TOKEN }}
           BLOG_TOKEN2: ${{ secrets.BLOG_TOKEN2 }}
