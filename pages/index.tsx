@@ -6,68 +6,18 @@ import {
   LockClosedIcon,
   ServerIcon,
 } from '@heroicons/react/20/solid'
-import { Octokit } from 'octokit'
+import { useRouter } from 'next/router'
 
-export default function Home({
-  allPostsData,
-}: {
-  allPostsData: {
-    date: string
-    title: string
-    id: string
-  }[]
-}) {
+export default function Home() {
+  const router = useRouter()
   const fnOctokit = async () => {
-    // Octokit.js
-    // https://github.com/octokit/core.js#readme
-    await fetch('/repos', {
-      method: 'POST', // 또는 'PUT'
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ path: 'docker-aws2' }),
-    })
-    const octokit = new Octokit({
-      auth: process.env.BLOG_TOKEN,
-    })
-    console.log('kungs', process.env.BLOG_TOKEN)
-    console.log('kungs2', process.env.REACT_APP_BLOG_TOKEN)
-    console.log('kungs2', process.env.NEXT_PUBLIC_BLOG_TOKEN)
-    // debugger
-    if (false) {
-      const res = await octokit.request(
-        'GET /repos/{owner}/{repo}/contents/{path}',
-        {
-          owner: 'how2loveme',
-          repo: 'how2loveme.github.io',
-          path: 'posts/docker-aws2',
-          //           message: 'my commit message4',
-          //           committer: {
-          //             name: 'how2loveme',
-          //             email: 'kimjinsub01@naver.com',
-          //           },
-          //           content: btoa(`---
-          // title: 'Two Forms of Pre-rendering4'
-          // date: '2022-01-01'
-          // ---
-          //
-          // Next.js has two forms of pre-rendering: **Static Generation** and **Server-side Rendering**. The difference is in **when** it generates the HTML for a page.
-          //
-          // - **Static Generation** is the pre-rendering method that generates the HTML at **build time**. The pre-rendered HTML is then _reused_ on each request.
-          // - **Server-side Rendering** is the pre-rendering method that generates the HTML on **each request**.
-          //
-          // Importantly, Next.js lets you **choose** which pre-rendering form to use for each page. You can create a "hybrid" Next.js app by using Static Generation for most pages and using Server-side Rendering for others.
-          //
-          //       `),
-          headers: {
-            'X-GitHub-Api-Version': '2022-11-28',
-          },
-        }
-      )
-    }
+    await router.push('/post')
   }
   return (
     <Layout>
+      <form method={'GET'} action={'/post'}>
+        <button onSubmit={fnOctokit}>kowaine</button>
+      </form>
       <div className="relative isolate overflow-hidden bg-white px-6 py-24 sm:py-32 lg:overflow-visible lg:px-0">
         <div className="absolute inset-0 -z-10 overflow-hidden">
           <svg
@@ -104,10 +54,7 @@ export default function Home({
           <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1 lg:mx-auto lg:grid lg:w-full lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
             <div className="lg:pr-4">
               <div className="lg:max-w-lg">
-                <p
-                  className="text-base font-semibold leading-7 text-indigo-600"
-                  onClick={fnOctokit}
-                >
+                <p className="text-base font-semibold leading-7 text-indigo-600">
                   Deploy faster
                 </p>
                 <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
@@ -213,6 +160,7 @@ export const getStaticProps: GetStaticProps = async () => {
   return {
     props: {
       allPostsData,
+      API_KEY: 'eee',
     },
   }
 }
