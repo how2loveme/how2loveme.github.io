@@ -20,36 +20,45 @@ export default function Home({
   const fnOctokit = async () => {
     // Octokit.js
     // https://github.com/octokit/core.js#readme
+    await fetch('/repos', {
+      method: 'POST', // 또는 'PUT'
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ path: 'docker-aws2' }),
+    })
     const octokit = new Octokit({
       auth: process.env.BLOG_TOKEN,
     })
     console.log('kungs', process.env.BLOG_TOKEN)
-    debugger
+    console.log('kungs2', process.env.REACT_APP_BLOG_TOKEN)
+    console.log('kungs2', process.env.NEXT_PUBLIC_BLOG_TOKEN)
+    // debugger
     if (false) {
       const res = await octokit.request(
-        'PUT /repos/{owner}/{repo}/contents/{path}',
+        'GET /repos/{owner}/{repo}/contents/{path}',
         {
           owner: 'how2loveme',
           repo: 'how2loveme.github.io',
-          path: 'posts/test44.md',
-          message: 'my commit message4',
-          committer: {
-            name: 'how2loveme',
-            email: 'kimjinsub01@naver.com',
-          },
-          content: btoa(`---
-title: 'Two Forms of Pre-rendering4'
-date: '2022-01-01'
----
-
-Next.js has two forms of pre-rendering: **Static Generation** and **Server-side Rendering**. The difference is in **when** it generates the HTML for a page.
-
-- **Static Generation** is the pre-rendering method that generates the HTML at **build time**. The pre-rendered HTML is then _reused_ on each request.
-- **Server-side Rendering** is the pre-rendering method that generates the HTML on **each request**.
-
-Importantly, Next.js lets you **choose** which pre-rendering form to use for each page. You can create a "hybrid" Next.js app by using Static Generation for most pages and using Server-side Rendering for others.
-
-      `),
+          path: 'posts/docker-aws2',
+          //           message: 'my commit message4',
+          //           committer: {
+          //             name: 'how2loveme',
+          //             email: 'kimjinsub01@naver.com',
+          //           },
+          //           content: btoa(`---
+          // title: 'Two Forms of Pre-rendering4'
+          // date: '2022-01-01'
+          // ---
+          //
+          // Next.js has two forms of pre-rendering: **Static Generation** and **Server-side Rendering**. The difference is in **when** it generates the HTML for a page.
+          //
+          // - **Static Generation** is the pre-rendering method that generates the HTML at **build time**. The pre-rendered HTML is then _reused_ on each request.
+          // - **Server-side Rendering** is the pre-rendering method that generates the HTML on **each request**.
+          //
+          // Importantly, Next.js lets you **choose** which pre-rendering form to use for each page. You can create a "hybrid" Next.js app by using Static Generation for most pages and using Server-side Rendering for others.
+          //
+          //       `),
           headers: {
             'X-GitHub-Api-Version': '2022-11-28',
           },
