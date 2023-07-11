@@ -76,7 +76,7 @@ jobs:
           # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
-      - name: Set nextjs config ${{ secrets.BLOG_TOKEN }} @${{ secrets.BLOG_TOKEN }}
+      - name: Set environment variables
         run: |
           echo "NEXT_PUBLIC_BLOG_TOKEN=$BLOG_TOKEN" >> .env
         env:
