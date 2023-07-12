@@ -20,14 +20,14 @@ cat /etc/*release*
 그래서 실제 리눅스나 VMWARE로 만든 다른 가상화 리눅스들과는 조금씩 다를 수 있다.
 * [ceoseo님 블로그 - 리눅스에서 OS버전 확인하기.](https://ongal.tistory.com/190)
 
-1. 먼저 도커를 설치하려고 한다.
+### 1. 먼저 도커를 설치하려고 한다.
 ```
 sudo yum install docker -y //도커 설치
 ```
 아마존 리눅스는 apt-get이 아닌 yum을 사용한다.
 -y옵션은 설치시 물어보는 항복에 대해 전부 Yes라고 답하는 옵션이다.
 
-2. 설치한 도커를 실행시킨다.
+### 2. 설치한 도커를 실행시킨다.
 ```
 //도커 실행
 sudo service docker start
@@ -44,7 +44,7 @@ sudo chmod 666 /var/run/docker.sock
 위의 그룹추가와 666권한변경을 해주어야만 ```docker ps``` 와 같이 도커 명령어 실행 시 sudo를 입력하지 않아도 된다.
 - [hmyanghm님의 블로그 - AWS EC2에 Docker 설치](https://velog.io/@hmyanghm/AWS-EC2%EC%97%90-Docker-%EC%84%A4%EC%B9%98)
 
-3. nginx 설치
+### 3. nginx 설치
 도커에서 nginx를 설치한다는 것은 nginx image를 pull하는 행위를 말한다.
 우리가 윈도우에서 프로그램을 설치 후 프로세스로 하여금 프로그램을 돌리는 것처럼
 도커에서 이미지를 pull받은 후 컨테이너로 하여금 이미지를 run해주어야 한다.
@@ -76,7 +76,7 @@ docker rm (-f) ws2 //ws2 컨테이너 (실행중 강제)삭제
 - [docker hub](https://hub.docker.com/_/nginx)
 - [생활코딩 Docker 입구 수업](https://opentutorials.org/course/4781/30609)
 
-4. 외부에서 AWS EC2 80번 포트로 접속하기
+### 4. 외부에서 AWS EC2 80번 포트로 접속하기
 AWS의 실행중인 인스턴스 대시보드에 들어가보면 퍼블릭 IPv4 DNS가 있다. 이 주소로 들어가 nginx 첫페이지를 보려고 한다.
 대시보드 DNS주소를 복사하여 브라우저 주소창에 쳐서 복사해보면 로딩이 얼마의 시간동안 이뤄지다가 연결되지 않음을 확인 할 수있다.
 EC2 콘솔로 로컬에서는 보이지만 외부에서 보이지 않는 이뉴는 AWS EC2의 80번포트로의 외부 진입이 허용되지 않았기 때문이다.
