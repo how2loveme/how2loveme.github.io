@@ -3,13 +3,14 @@ import { Octokit } from 'octokit'
 import { useRouter } from 'next/router'
 import { useLayoutEffect } from 'react'
 
-export default function Post({ name }: { name?: string }) {
-  const router = useRouter()
-  useLayoutEffect(() => {
-    router.replace(`/posts/${name}`.replace('.md', ''), undefined, {
-      shallow: true,
-    })
-  })
+export default function Post({ name, ...params }: { name?: string }) {
+  // const router = useRouter()
+  // useLayoutEffect(() => {
+  //   router.replace(`/posts/${name}`.replace('.md', ''), undefined, {
+  //     shallow: true,
+  //   })
+  // })
+  debugger
   return (
     <h1>
       <span>{name}</span>
