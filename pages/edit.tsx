@@ -1,5 +1,6 @@
 import Layout from '../components/layout'
-import { lazy, Suspense, useEffect, useReducer, useRef, useState } from 'react'
+import { useReducer, useRef, useState } from 'react'
+import loadable from '@loadable/component'
 
 interface postProps {
   subject: string
@@ -8,17 +9,9 @@ interface postProps {
   content: string
 }
 
-const Editor = lazy(() => import('../components/editor'))
-
-// Add a fixed delay so you can see the loading state
-const delayForDemo = (promise) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, 2000)
-  }).then(() => promise)
-}
+const Editor = loadable(() => import('../components/editor'))
 
 export default function Edit() {
-  const [ready, setReady] = useState<boolean>(false)
   const iptSubject = useRef<HTMLInputElement>()
   const selCategory = useRef<HTMLSelectElement>()
   const iptTags = useRef<HTMLInputElement>()
@@ -43,9 +36,6 @@ export default function Edit() {
     reducer,
     initialState
   )
-  useEffect(() => {
-    setReady(!0)
-  }, [ready])
 
   const ref = useRef(null)
 
@@ -168,7 +158,7 @@ export default function Edit() {
                 내용
               </label>
               <div className="mt-2">
-                {ready ? <Editor className={'min-h-2000'} ref={ref} /> : <></>}
+                <Editor className={'min-h-2000'} forwardRef={ref} />
               </div>
             </div>
           </div>

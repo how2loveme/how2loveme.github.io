@@ -1,20 +1,24 @@
-import { forwardRef, lazy, Suspense, useImperativeHandle, useRef } from 'react'
+import { forwardRef, useImperativeHandle } from 'react'
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax'
+import { Editor as TuiEditor } from '@toast-ui/react-editor'
+import '@toast-ui/editor/dist/toastui-editor.css'
+import '@toast-ui/editor/dist/i18n/ko-kr'
+import 'tui-color-picker/dist/tui-color-picker.css'
+import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css'
 
 interface editorProps {
   className?: string
-  ref?: any
+  forwardRef?: any
 }
-const TuiEditor = lazy(() => import('../components/core/editor'))
+// const TuiEditor = loadable(() => import('./core/tuiEditor'))
 
 const Editor = forwardRef((props: editorProps, ref) => {
-  const editorRef = useRef()
   useImperativeHandle(
     ref,
     () => {
       return {
         getInstance() {
-          return editorRef.current
+          return props.forwardRef.current
         },
       }
     },
@@ -22,14 +26,12 @@ const Editor = forwardRef((props: editorProps, ref) => {
   )
   return (
     <div className={props.className}>
-      <Suspense fallback={<div>loading...</div>}>
-        <TuiEditor
-          language={'ko'}
-          plugins={[colorSyntax]}
-          height={'500px'}
-          ref={editorRef}
-        />
-      </Suspense>
+      <TuiEditor
+        language={'ko'}
+        plugins={[colorSyntax]}
+        height={'500px'}
+        ref={props.forwardRef}
+      />
     </div>
   )
 })
