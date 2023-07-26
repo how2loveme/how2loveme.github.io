@@ -1,6 +1,5 @@
 import Layout from '../components/layout'
-import dynamic from 'next/dynamic'
-import { useReducer, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useReducer, useRef, useState } from 'react'
 
 interface postProps {
   subject: string
@@ -8,11 +7,21 @@ interface postProps {
   tags: string
   content: string
 }
+
+const Editor = lazy(() => import('../components/editor'))
+
+// Add a fixed delay so you can see the loading state
+const delayForDemo = (promise) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, 2000)
+  }).then(() => promise)
+}
+
 export default function Edit() {
+  const [ready, setReady] = useState<boolean>(false)
   const iptSubject = useRef<HTMLInputElement>()
   const selCategory = useRef<HTMLSelectElement>()
   const iptTags = useRef<HTMLInputElement>()
-  const editorRef = useRef()
   const [mode, setMode] = useState<'insert' | 'modify'>('insert')
   const initialState: postProps = {
     subject: '',
@@ -20,31 +29,32 @@ export default function Edit() {
     tags: '',
     content: '',
   }
-  // const reducer = (state: postProps, action) => {
-  //   let newState = Object.assign({}, state)
-  //   switch (action.type) {
-  //     case 'LOAD':
-  //       newState = Object.assign({}, initialState)
-  //       return newState
-  //     default:
-  //       throw new Error()
-  //   }
-  // }
-  // const [state, dispatch]: [state: postProps, dispatch: any] = useReducer(
-  //   reducer,
-  //   initialState
-  // )
+  const reducer = (state: postProps, action) => {
+    let newState = Object.assign({}, state)
+    switch (action.type) {
+      case 'LOAD':
+        newState = Object.assign({}, initialState)
+        return newState
+      default:
+        throw new Error()
+    }
+  }
+  const [state, dispatch]: [state: postProps, dispatch: any] = useReducer(
+    reducer,
+    initialState
+  )
+  useEffect(() => {
+    setReady(!0)
+  }, [ready])
 
-  const Editor = dynamic(() => import('../components/editor'), {
-    ssr: false,
-    loading: () => <p>loading...</p>,
-  })
+  const ref = useRef(null)
+
   const fnSave = (e) => {
     debugger
     iptSubject.current.value
     selCategory.current.value
     iptTags.current.value
-    editorRef.current
+    ref.current
   }
   return (
     <Layout edit>
@@ -158,7 +168,7 @@ export default function Edit() {
                 내용
               </label>
               <div className="mt-2">
-                <Editor className={'min-h-2000'} ref={editorRef} />
+                {ready ? <Editor className={'min-h-2000'} ref={ref} /> : <></>}
               </div>
             </div>
           </div>
