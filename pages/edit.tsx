@@ -1,15 +1,17 @@
 import Layout from '../components/layout'
-import { useReducer, useRef, useState } from 'react'
+import { useCallback, useMemo, useReducer, useRef, useState } from 'react'
 import loadable from '@loadable/component'
+import { FaXmark } from 'react-icons/fa6'
 
 interface postProps {
   subject: string
   category: string
-  tags: string
+  tags: string[]
   content: string
 }
 
 const Editor = loadable(() => import('../components/editor'))
+const Tag = loadable(() => import('../components/tag'))
 
 export default function Edit() {
   const iptSubject = useRef<HTMLInputElement>()
@@ -19,7 +21,7 @@ export default function Edit() {
   const initialState: postProps = {
     subject: '',
     category: '',
-    tags: '',
+    tags: [],
     content: '',
   }
   const reducer = (state: postProps, action) => {
@@ -27,6 +29,20 @@ export default function Edit() {
     switch (action.type) {
       case 'LOAD':
         newState = Object.assign({}, initialState)
+        return newState
+      case 'ADDTAG':
+        if (
+          action.payload.trim() &&
+          newState.tags.findIndex((item) => item === action.payload.trim()) ===
+            -1
+        ) {
+          newState.tags.push(action.payload)
+        }
+        return newState
+      case 'REMOVETAG':
+        newState.tags = newState.tags.filter(
+          (label) => label !== action.payload.trim()
+        )
         return newState
       default:
         throw new Error()
@@ -46,6 +62,16 @@ export default function Edit() {
     iptTags.current.value
     ref.current
   }
+  const fnKeyup = (e) => {
+    if (e.code === 'Enter') {
+      dispatch({ type: 'ADDTAG', payload: e.target.value })
+      e.target.value = null
+    }
+  }
+  const fnTagClick = (label: string) => {
+    dispatch({ type: 'REMOVETAG', payload: label })
+  }
+
   return (
     <Layout edit>
       <div className="space-y-12">
@@ -75,7 +101,6 @@ export default function Edit() {
                     autoComplete="subject"
                     className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                     placeholder=""
-                    //value={state.subject}
                     ref={iptSubject}
                   />
                 </div>
@@ -94,7 +119,6 @@ export default function Edit() {
                   name="category"
                   autoComplete="country-name"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                  //value={state.category}
                   ref={selCategory}
                 >
                   <option>개발</option>
@@ -119,34 +143,24 @@ export default function Edit() {
                     className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                     placeholder=""
                     ref={iptTags}
+                    onKeyUp={fnKeyup}
                   />
                 </div>
-                <div className="flex flex-wrap gap-x-3 gap-y-2 my-2">
-                  <span className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
-                    Badge
-                  </span>
-                  <span className="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
-                    Badge
-                  </span>
-                  <span className="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">
-                    Badge
-                  </span>
-                  <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                    Badge
-                  </span>
-                  <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
-                    Badge
-                  </span>
-                  <span className="inline-flex items-center rounded-md bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10">
-                    Badge
-                  </span>
-                  <span className="inline-flex items-center rounded-md bg-purple-50 px-2 py-1 text-xs font-medium text-purple-700 ring-1 ring-inset ring-purple-700/10">
-                    Badge
-                  </span>
-                  <span className="inline-flex items-center rounded-md bg-pink-50 px-2 py-1 text-xs font-medium text-pink-700 ring-1 ring-inset ring-pink-700/10">
-                    Badge
-                  </span>
-                </div>
+                {state.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-x-3 gap-y-2 my-2">
+                    {state.tags.map((item) => {
+                      return (
+                        <Tag
+                          key={item}
+                          label={item}
+                          icon={'xmark'}
+                          onClick={fnTagClick}
+                          random
+                        />
+                      )
+                    })}
+                  </div>
+                )}
               </div>
             </div>
 

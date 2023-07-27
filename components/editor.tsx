@@ -10,7 +10,6 @@ interface editorProps {
   className?: string
   forwardRef?: any
 }
-// const TuiEditor = loadable(() => import('./core/tuiEditor'))
 
 const Editor = forwardRef((props: editorProps, ref) => {
   useImperativeHandle(
@@ -27,9 +26,24 @@ const Editor = forwardRef((props: editorProps, ref) => {
   return (
     <div className={props.className}>
       <TuiEditor
-        language={'ko'}
-        plugins={[colorSyntax]}
+        usageStatistics={false}
         height={'500px'}
+        initialValue={''}
+        previewStyle={'tab'}
+        previewHighlight={true}
+        initialEditType={'wysiwyg'}
+        language={'ko'}
+        toolbarItems={[
+          ['heading', 'bold', 'italic', 'strike'],
+          ['hr', 'quote'],
+          ['ul', 'ol', 'task', 'indent', 'outdent'],
+          ['table', 'image', 'link'],
+          ['code', 'codeblock'],
+          // ['scrollSync']
+        ]}
+        hideModeSwitch={true}
+        placeholder={'내용을 입력하세요'}
+        plugins={[colorSyntax]}
         ref={props.forwardRef}
       />
     </div>
