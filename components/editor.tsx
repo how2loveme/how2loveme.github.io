@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle } from 'react'
+import { forwardRef, useImperativeHandle, useRef } from 'react'
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax'
 import { Editor as TuiEditor } from '@toast-ui/react-editor'
 import '@toast-ui/editor/dist/toastui-editor.css'
@@ -8,16 +8,16 @@ import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-sy
 
 interface editorProps {
   className?: string
-  forwardRef?: any
 }
 
 const Editor = forwardRef((props: editorProps, ref) => {
+  const editorRef = useRef(null)
   useImperativeHandle(
     ref,
     () => {
       return {
-        getInstance() {
-          return props.forwardRef.current
+        getValue() {
+          return editorRef.current.getInstance().getHTML()
         },
       }
     },
@@ -44,7 +44,7 @@ const Editor = forwardRef((props: editorProps, ref) => {
         hideModeSwitch={true}
         placeholder={'내용을 입력하세요'}
         plugins={[colorSyntax]}
-        ref={props.forwardRef}
+        ref={editorRef}
       />
     </div>
   )
