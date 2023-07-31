@@ -1,6 +1,7 @@
 import Layout from '../components/layout'
 import { useEffect, useReducer, useRef, useState } from 'react'
 import loadable from '@loadable/component'
+import Modal from '../components/modal'
 
 interface postProps {
   subject: string
@@ -213,6 +214,7 @@ export default function Edit() {
           </button>
         </div>
       </form>
+      <Modal />
     </Layout>
   )
 }
