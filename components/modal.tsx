@@ -1,20 +1,16 @@
 import {
   createContext,
   Fragment,
+  memo,
   ReactElement,
   useContext,
-  useEffect,
   useMemo,
   useReducer,
   useRef,
-  useState,
 } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
-import { memo } from 'react'
 import _ from 'lodash'
-
-interface ModalProps {}
 
 const ModalStateContext = createContext(null)
 const ModalDispatchContext = createContext(null)
@@ -24,7 +20,6 @@ export const ModalContextProvider = ({
 }: {
   children: ReactElement
 }) => {
-  debugger
   const initState = {
     open: false,
   }
@@ -62,7 +57,6 @@ export const useModalDispatch = () => {
 }
 
 const Modal = memo(() => {
-  debugger
   const cancelButtonRef = useRef(null)
 
   const modalState = useContext(ModalStateContext)

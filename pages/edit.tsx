@@ -1,12 +1,5 @@
 import Layout from '../components/layout'
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useReducer,
-  useRef,
-  useState,
-} from 'react'
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import loadable from '@loadable/component'
 import { useModalDispatch } from '../components/modal'
 
@@ -22,7 +15,6 @@ const Editor = loadable(() => import('../components/editor'))
 const Tag = loadable(() => import('../components/tag'))
 
 export default function Edit() {
-  debugger
   const iptSubjectRef = useRef<HTMLInputElement>()
   const selCategoryRef = useRef<HTMLSelectElement>()
   const iptTagsRef = useRef<HTMLInputElement>()
@@ -43,62 +35,62 @@ export default function Edit() {
     content: '',
     save: false,
   }
-  // const reducer = (state: postProps, action) => {
-  //   let newState = Object.assign({}, state)
-  //   switch (action.type) {
-  //     case 'LOAD':
-  //       newState = Object.assign({}, initialState)
-  //       return newState
-  //     case 'ADDTAG':
-  //       if (
-  //         action.payload.trim() &&
-  //         newState.tags.findIndex((item) => item === action.payload.trim()) ===
-  //           -1
-  //       ) {
-  //         newState.tags.push(action.payload)
-  //       }
-  //       return newState
-  //     case 'REMOVETAG':
-  //       newState.tags = newState.tags.filter(
-  //         (label) => label !== action.payload.trim()
-  //       )
-  //       return newState
-  //     case 'SAVE':
-  //       return Object.assign(newState, { ...action.payload, save: true })
-  //     default:
-  //       throw new Error()
-  //   }
-  // }
-  // const [state, dispatch]: [state: postProps, dispatch: any] = useReducer(
-  //   reducer,
-  //   initialState
-  // )
-  // useEffect(() => {
-  //   if (state.save) {
-  //     ppp()
-  //   }
-  // }, [state.save])
-  //
-  // const fnKeyup = (e) => {
-  //   if (e.code === 'Enter') {
-  //     dispatch({ type: 'ADDTAG', payload: e.target.value })
-  //     e.target.value = null
-  //   }
-  // }
-  // const fnTagClick = (label: string) => {
-  //   dispatch({ type: 'REMOVETAG', payload: label })
-  // }
-  // const fnSave = async (e) => {
-  //   await dispatch({
-  //     type: 'SAVE',
-  //     payload: {
-  //       subject: iptSubjectRef.current.value,
-  //       category: selCategoryRef.current.value,
-  //       content: editorRef.current.getValue(),
-  //     },
-  //   })
-  //   // formRef.current.submit()
-  // }
+  const reducer = (state: postProps, action) => {
+    let newState = Object.assign({}, state)
+    switch (action.type) {
+      case 'LOAD':
+        newState = Object.assign({}, initialState)
+        return newState
+      case 'ADDTAG':
+        if (
+          action.payload.trim() &&
+          newState.tags.findIndex((item) => item === action.payload.trim()) ===
+            -1
+        ) {
+          newState.tags.push(action.payload)
+        }
+        return newState
+      case 'REMOVETAG':
+        newState.tags = newState.tags.filter(
+          (label) => label !== action.payload.trim()
+        )
+        return newState
+      case 'SAVE':
+        return Object.assign(newState, { ...action.payload, save: true })
+      default:
+        throw new Error()
+    }
+  }
+  const [state, dispatch]: [state: postProps, dispatch: any] = useReducer(
+    reducer,
+    initialState
+  )
+  useEffect(() => {
+    if (state.save) {
+      ppp()
+    }
+  }, [state.save])
+
+  const fnKeyup = (e) => {
+    if (e.code === 'Enter') {
+      dispatch({ type: 'ADDTAG', payload: e.target.value })
+      e.target.value = null
+    }
+  }
+  const fnTagClick = (label: string) => {
+    dispatch({ type: 'REMOVETAG', payload: label })
+  }
+  const fnSave = async (e) => {
+    await dispatch({
+      type: 'SAVE',
+      payload: {
+        subject: iptSubjectRef.current.value,
+        category: selCategoryRef.current.value,
+        content: editorRef.current.getValue(),
+      },
+    })
+    // formRef.current.submit()
+  }
   const ppp = async () => {
     const hi = await import('../pages/api/kowaine').then((kowaine) =>
       kowaine.GitPost()
@@ -108,8 +100,7 @@ export default function Edit() {
 
   return (
     <Layout edit>
-      {/*<form onSubmit={fnSave} method="POST" action="/post" ref={formRef}>*/}
-      <form onSubmit={() => {}} method="POST" action="/post" ref={formRef}>
+      <form onSubmit={fnSave} method="POST" action="/post" ref={formRef}>
         <div className="space-y-12">
           <div className="border-b border-gray-900/10 pb-12">
             <h2
@@ -182,24 +173,24 @@ export default function Edit() {
                       className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                       placeholder=""
                       ref={iptTagsRef}
-                      // onKeyUp={fnKeyup}
+                      onKeyUp={fnKeyup}
                     />
                   </div>
-                  {/*{state.tags.length > 0 && (*/}
-                  {/*  <div className="flex flex-wrap gap-x-3 gap-y-2 my-2">*/}
-                  {/*    {state.tags.map((item) => {*/}
-                  {/*      return (*/}
-                  {/*        <Tag*/}
-                  {/*          key={item}*/}
-                  {/*          label={item}*/}
-                  {/*          icon={'xmark'}*/}
-                  {/*          onClick={fnTagClick}*/}
-                  {/*          random*/}
-                  {/*        />*/}
-                  {/*      )*/}
-                  {/*    })}*/}
-                  {/*  </div>*/}
-                  {/*)}*/}
+                  {state.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-x-3 gap-y-2 my-2">
+                      {state.tags.map((item) => {
+                        return (
+                          <Tag
+                            key={item}
+                            label={item}
+                            icon={'xmark'}
+                            onClick={fnTagClick}
+                            random
+                          />
+                        )
+                      })}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -227,7 +218,7 @@ export default function Edit() {
           <button
             type="button"
             className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            // onClick={fnSave}
+            onClick={fnSave}
           >
             Save
           </button>

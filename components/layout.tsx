@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import Header from './header'
 import { Dialog, Disclosure, Menu, Transition } from '@headlessui/react'
-import { Fragment, useState, Context, useContext, createContext } from 'react'
+import { Fragment, useState } from 'react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import {
   ChevronDownIcon,
@@ -79,7 +79,6 @@ export default function Layout({
   post?: boolean
 }) {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
-  debugger
   return (
     <>
       <Head>
@@ -376,7 +375,6 @@ export default function Layout({
                     </Disclosure>
                   ))}
                 </form>
-
                 {/* Product grid */}
                 <div className="lg:col-span-3">{children}</div>
               </div>
@@ -386,7 +384,7 @@ export default function Layout({
       ) : (
         <div className="bg-white">
           <main className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-            {/*{children}*/}
+            {children}
           </main>
         </div>
       )}
