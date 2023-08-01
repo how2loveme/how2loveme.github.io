@@ -1,19 +1,80 @@
-import { Fragment, useRef, useState } from 'react'
+import {
+  createContext,
+  Fragment,
+  ReactElement,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
+import { memo } from 'react'
+import _ from 'lodash'
 
-export default function Modal() {
-  const [open, setOpen] = useState(true)
+interface ModalProps {}
 
+const ModalStateContext = createContext(null)
+const ModalDispatchContext = createContext(null)
+
+export const ModalContextProvider = ({
+  children,
+}: {
+  children: ReactElement
+}) => {
+  debugger
+  const initState = {
+    open: false,
+  }
+
+  const reducer = (state, action) => {
+    const newState = _.cloneDeep(state)
+    switch (action.type) {
+      case 'CLOSE':
+        newState.open = false
+        return newState
+      case 'OPEN':
+        newState.open = true
+        return newState
+      default:
+        return newState
+    }
+  }
+
+  const [state, dispatch] = useReducer(reducer, initState)
+  const memorizedState = useMemo(() => state, [state])
+  return (
+    <ModalStateContext.Provider value={memorizedState}>
+      <ModalDispatchContext.Provider value={dispatch}>
+        {children}
+        <Modal />
+      </ModalDispatchContext.Provider>
+    </ModalStateContext.Provider>
+  )
+}
+export const useModalState = () => {
+  return useContext(ModalStateContext)
+}
+export const useModalDispatch = () => {
+  return useContext(ModalDispatchContext)
+}
+
+const Modal = memo(() => {
+  debugger
   const cancelButtonRef = useRef(null)
 
+  const modalState = useContext(ModalStateContext)
+  const modalDispatch = useContext(ModalDispatchContext)
+
   return (
-    <Transition.Root show={open} as={Fragment}>
+    <Transition.Root show={modalState.open} as={Fragment}>
       <Dialog
         as="div"
         className="relative z-10"
         initialFocus={cancelButtonRef}
-        onClose={setOpen}
+        onClose={() => modalDispatch({ type: 'CLOSE' })}
       >
         <Transition.Child
           as={Fragment}
@@ -79,14 +140,14 @@ export default function Modal() {
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                    onClick={() => setOpen(false)}
+                    onClick={() => modalDispatch({ type: 'CLOSE' })}
                   >
                     Deactivate
                   </button>
                   <button
                     type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                    onClick={() => setOpen(false)}
+                    onClick={() => modalDispatch({ type: 'CLOSE' })}
                     ref={cancelButtonRef}
                   >
                     Cancel
@@ -99,4 +160,4 @@ export default function Modal() {
       </Dialog>
     </Transition.Root>
   )
-}
+})
