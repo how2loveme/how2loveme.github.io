@@ -1,10 +1,10 @@
-import Layout from '../components/layout'
-import { getAllPostIds, getPostData } from '../lib/posts'
+import Layout from '../../components/layout'
+import { getAllPostIds, getPostData } from '../../lib/posts'
 import Head from 'next/head'
 import { GetStaticProps, GetStaticPaths } from 'next'
 import { PaperClipIcon } from '@heroicons/react/20/solid'
 
-export default function Profile() {
+export default function Page() {
     return (
         <Layout>
             <div>

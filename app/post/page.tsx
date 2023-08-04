@@ -2,12 +2,12 @@ import { useEffect } from 'react'
 import { GetStaticProps } from 'next'
 import { Octokit } from 'octokit'
 
-const Post = () => {
+const Page = () => {
   useEffect(() => {
     ppp()
   }, [])
   const ppp = async () => {
-    const hi = await import('../pages/api/kowaine').then((kowaine) =>
+    const hi = await import('../api/kowaine').then((kowaine) =>
       kowaine.GitPost()
     )
     alert(hi.data['name'])
@@ -33,4 +33,4 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   }
 }
 
-export default Post
+export default Page
