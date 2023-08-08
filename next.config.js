@@ -4,14 +4,14 @@
 const nextConfig = {
   output: 'export',
   env: {},
-  // rewrites: async () => {
-  //   return [
-  //     {
-  //       // source: '/kungs/:path*',
-  //       // destination: '/posts/:path*',
-  //     },
-  //   ]
-  // },
+  rewrites: async () => {
+    return [
+      {
+        // source: '/kungs/:path*',
+        // destination: '/posts/:path*',
+      },
+    ]
+  },
 
   // Optional: Change links `/me` -> `/me/` and emit `/me.html` -> `/me/index.html`
   // trailingSlash: true,
