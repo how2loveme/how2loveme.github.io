@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import { useModalDispatch } from '../../components/modal'
-import Editor from '../../components/editor'
+// import Editor from '../../components/editor'
 import Tag from '../../components/tag'
+import loadable from '@loadable/component'
 
 interface postProps {
   subject: string
@@ -12,6 +13,8 @@ interface postProps {
   content: string
   save: boolean
 }
+
+const Editor = loadable(() => import('../../components/editor'))
 
 export default function Page() {
   const iptSubjectRef = useRef<HTMLInputElement>()
@@ -91,10 +94,10 @@ export default function Page() {
     // formRef.current.submit()
   }
   const ppp = async () => {
-    const hi = await import('../api/kowaine').then((kowaine) =>
-      kowaine.GitPost()
-    )
-    alert(hi.data['name'])
+    // const hi = await import('../api/kowaine').then((kowaine) =>
+    //   kowaine.GitPost()
+    // )
+    // alert(hi.data['name'])
   }
 
   return (

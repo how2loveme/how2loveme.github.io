@@ -1,3 +1,5 @@
+'use client'
+
 import { FaXmark } from 'react-icons/fa6'
 import { memo } from 'react'
 import _ from 'lodash'
