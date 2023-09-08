@@ -11,6 +11,7 @@
 | 열모드 드래그          | ctrl + shift + alt + 드래그    | ⇧ + option(⌥) + command(⌘) + 드래그 |
 | 파일 새로만들기         | ctrl + alt + insert         | control(⌃) + option(⌥) + N       |
 | 스크래치 새로만들기       | ctrl + shift + alt + insert | ⇧ + command(⌘) + N               |
-| 마크다운 테이블 서식 다시지정 |                             | ⇧ + option(⌥) + ↩︎               |
+| 마크다운 테이블 서식 다시지정 | shift + alt + enter         | ⇧ + option(⌥) + ↩︎               |
+| 다중 커서            | shift + alt + click         |                                  |
 
 
