@@ -22,7 +22,7 @@
 | 마크다운 관련 기능    | windows             | mac                               |
 |---------------|---------------------|-----------------------------------|
 | 테이블 서식 다시지정   | Shift + Alt + Enter | shift(⇧) + option(⌥) + return(⏎)︎ |
-| 삽입            | Alt + Insert        |                                   | 
-| 테이블 밑으로 한줄 삽입 | Shift + Enter       |                                   |
+| 삽입            | Alt + Insert        | command(⌘) + N                    | 
+| 테이블 밑으로 한줄 삽입 | Shift + Enter       | shift(⇧) + return(⏎)︎             |
 
  
