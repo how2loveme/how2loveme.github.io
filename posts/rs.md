@@ -65,3 +65,34 @@ kubectl scale rs/rs-nginx --replicas=5
 영구적인 replicas변경인 경우엔 2번   
 그렇지 않고 일시적일 경우엔 1,3번으로 쓰면 좋을 것 같다. 
 
+> ### 2. 디플로이먼트
+deployment는 레플리카셋이나 레플리케이션컨트롤러를 제어하는 상위 요소의 개념이다.   
+사용방법 또한 레플리카셋과 매우 흡사하다.   
+```yaml
+# deploy-jenkins.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-jenkins
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: jenkins-test
+  template:
+    metadata:
+      labels:
+        app: jenkins-test
+    spec:
+      containers:
+        - name: jenkins
+          image: jenkins/jenkins:lts-jdk11
+          ports:
+            - containerPort: 8080
+
+```
+조회 방법 및 관리 방법 또한 레플리카셋과 매우 흡사하다.
+```bash
+kubectl get pod,rs,deploy -o wide --show-labels
+```
+
