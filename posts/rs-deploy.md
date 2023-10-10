@@ -96,3 +96,75 @@ spec:
 kubectl get pod,rs,deploy -o wide --show-labels
 ```
 
+```yaml
+# deploy-alpine.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alpine
+  labels: 
+    app: alpine
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: alpine
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 50%
+      maxUnavailable: 50%
+  template:
+    metadata:
+      labels:
+        app: alpine
+    spec:
+      containers:
+        - name: alpine
+          image: alpine:3.4
+
+```
+
+디플로이먼트를 사용하면 레플리카셋, 레플리케이션컨트롤러를 손쉽게 관리할 수 있다.   
+가령 디플로이먼트의 이미지버전을 변경 할 경우,    
+`RollingUpdate` 전략을 이용하여, 서버를 중단하지 않고 버전업을 할 수 있다.   
+이전버전의 pod를 하나씩 죽이면서, 동시에 새로운 버전의 pod를 하나씩 올리는 방식이다.
+이 때 노드들의 시스템역량을 고려해 `maxSurge`와 `maxUnavailable`을 설정해주어야 한다.   
+
+maxSurge는 의도한 파드 수에 대해 생성할 수 있는 최대 수이다.    
+예를들어 레플리카스가 4면서, maxSurge가 25%인 경우,   
+레플리카스는 순간 5개까지 늘어날 수 있다.   
+
+maxUnavailable은 반대로 의도한 파드 수에 대해 중단할 수 있는 최대 수이다.   
+예를들어 레플리카스가 4면서, maxUnavailable이 25%인 경우,   
+레플리카스는 동시에 최대 1개까지만 중단할 수 있다.    
+다르게 말하면 최소 3개(75%)는 살아있어야 한다.   
+
+```bash
+# edit 명령어를 통한 수정
+kubectl edit deploy {{deploymentName}}
+# ex) kubectl edit deploy alpine
+
+# set 명령어를 통한 수정
+kubectl set image deploy http-go http-go=gasbugs/http-go:v2 --record=true
+
+# 디플로이먼트 http-go의 롤아웃 상태보기
+kubectl rollout status deploy http-go
+
+# 디플로이먼트 http-go의 롤아웃 히스토리보기
+kubectl rollout history deploy http-go 
+
+# 디플로이먼트 이전 버전으로 돌아가기
+kubectl rollout undo deploy http-go --record=true
+
+# 디플로이먼트 특정 버전으로 돌아가기(history 좌측에 표시된 revision번호)
+kubectl rollout undo deploy http-go --to-revision=1
+
+# 롤아웃된 레플리카셋은 사라지지 않고, 남아있다. 다만 READY가 0일뿐.
+kubectl get rs -o wide
+
+# --record=true 옵션이 deprecated된다고 한다. annotate --overwrite=true 
+kubectl annotate deployment http-go kubernetes.io/change-cause="version change to v2 to v3!"
+# 이런 식으로 annotate명령어를 이용해 현재 리비전의 change-cause의 내용을 바꿀 수 있다.
+
+```
