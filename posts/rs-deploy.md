@@ -164,7 +164,7 @@ kubectl rollout undo deploy http-go --to-revision=1
 kubectl get rs -o wide
 
 # --record=true 옵션이 deprecated된다고 한다. annotate --overwrite=true 
-kubectl annotate deployment http-go kubernetes.io/change-cause="version change to v2 to v3!"
+kubectl annotate deploy http-go kubernetes.io/change-cause="version change to v2 to v3!"
 # 이런 식으로 annotate명령어를 이용해 현재 리비전의 change-cause의 내용을 바꿀 수 있다.
 
 ```
