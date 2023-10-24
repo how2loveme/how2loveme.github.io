@@ -1,47 +1,10 @@
 ---
-title: '클러스터, pod, rabel, rc'
+title: 'pod, rabel, rc'
 date: '2023-09-26'
 ---
 
-## k8s 개념공부 - 클러스터, pod, 라벨, 레플리케이션컨트롤러
+## k8s 개념공부 - pod, 라벨, 레플리케이션컨트롤러
 쿠버네티스를 사용함에 있어 기본적인 개념과 명령어를 정리해보려고 한다.
-
-> ### 1. 노드 구성   
-쿠버네티스가 설치된 세 개의 노드가 있다고 가정하면,   
-하나의 노드를 마스터노드로 쓰고, 나머지 두개의 노드를 워커노드로 사용한다.    
-마스터노드에 워커노드들을 연결하는 작업이 필요하다.   
-이를 클러스터라고 하고, 마스터와 워커에서 아래와 같이 작업해야한다.   
-```bash
-# master node
-sudo kubeadm init
-```
-마스터노드에서 kubeadm을 init하면 아래와 같은 토큰이 생성 및 조인 명령어를 표출해준다.   
-이를 워커노드에서 실행하면 된다. 권한이 없이 때문에 sudo를 붙여야 한다.     
-```bash
-# worker nodes
-sudo kubeadm join 10.138.0.9:6443 --token 7av8r9.0imaecklarbq1kou         
---discovery-token-ca-cert-hash sha256:0d0ff8fdc1918f10f5caeb7fcb2dd0edaaba92b705cb9d16058f8ca56a2c514e
-```
-이렇게하면 조인이 된다. 마스터노드에서 아래 명령어로 확인 할 수 있다.
-```bash
-kubectl get nodes -o wide
-```
-마지막으로 파드 네트워크를 설치해서 노드간 네트워크 통신이 가능하게 해야한다.   
-마스터노드에서 필요한 작업이고, Cilium을 사용해서 클러스터 파드 네트워크 통신을 하겠다.   
-```bash
-# master node
-curl -LO https://github.com/cilium/cilium-cli/releases/latest/download/cilium-linux-amd64.tar.gz
-sudo tar xzvfC cilium-linux-amd64.tar.gz /usr/local/bin
-rm cilium-linux-amd64.tar.gz
-cilium install
-cilium status
-
-# cluster 노드들 확인
-kubectl get nodes -o wide
-```
-이렇게 하면 `STATUS`가 NotReady에서 Ready로 변경된 것을 볼 수 있다.
-
-
 
 > ### 2. pod
 마스터노드에서 kubectl 명령으로 pod를 생성하면, 연결된 워커노드 중 할당된 자원과 일을 계산해서    

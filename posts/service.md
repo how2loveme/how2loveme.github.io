@@ -165,3 +165,325 @@ cloudshell 터미널에서 방화벽을 이용하여 특정 포트를 열어주�
 그 이후에 노드의 `외부ip:포트`로 접근 시 해당 서비스가 클러스터링하여 파드에 접근함을 확인 할 수 있다.  
 `ex) curl 34.82.22.116:30001`
 
+> ### 4. 인그레스
+k8s에서 nginx를 사용한 로드밸런싱
+```bash
+git clone https://github.com/kubernetes/ingress-nginx.git
+kubectl apply -k `pwd`/ingress-nginx/deploy/static/provider/baremetal
+kubectl delete validatingwebhookconfigurations.admissionregistration.k8s.io ingress-nginx-admission
+# kubectl delete validatingwebhookconfiguration/ingress-nginx-admission
+
+kubectl create ing http-go-ingress --rule="/welcome/test=http-go:80" --annotation=nginx.ingress.kubernetes.io/rewrite-target=/welcome/test -o ingressClassName=nginx --dry-run=client -o yaml
+
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -out ingress-tls.crt \
+    -keyout ingress-tls.key \
+    -subj "/CN=ingress-tls"
+
+kubectl create secret tls ingress-tls \
+    --namespace default \
+    --key ingress-tls.key \
+    --cert ingress-tls.crt
+```
+
+
+```yaml
+# ingress-http-go.yml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /welcome/test
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  creationTimestamp: null
+  name: http-go-ingress
+spec:
+  tls:
+    - hosts:
+        - gasbugs.com
+      secretName: ingress-tls
+  ingressClassName: nginx
+  rules:
+  - host: gasbugs.com 
+    http:
+      paths:
+      - backend:
+          service:
+            name: http-go
+            port:
+              number: 80
+        path: /welcome/test
+        pathType: Exact
+status:
+  loadBalancer: {}
+
+```
+
+```bash
+kubectl create deploy http-go --image=gasbugs/http-go:ingress
+kubectl expose deploy http-go --port=80 --target-port=8080
+
+kubectl exec -it http-go-7fd8fc8d7b-v8vcx -- bash
+```
+
+```bash
+curl http://gasbugs.com:30858/welcome/test -kv --resolve gasbugs.com:30858:127.0.0.1
+curl https://gasbugs.com:30800/welcome/test -kv --resolve gasbugs.com:30800:127.0.0.1
+
+```
+
+```bash
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+-out ex-tls.crt \
+-keyout ex-tls.key \
+-subj "/CN=ex-tls"
+
+kubectl create secret tls ex-tls \
+--namespace default \
+--key ex-tls.key \
+--cert ex-tls.crt
+```
+```yaml
+# kubectl create ns ex-ns --dry-run=client -o yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: null
+  name: ex-ns
+spec: {}
+status: {}
+
+---
+# kubectl create ing ex-ing --rule="tomcat.gasbugs.com/=ex-np-tomcat:8080,tls=ex-tls" --annotation=nginx.ingress.kubernetes.io/ssl-redirect="true" --dry-run=client -o yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  creationTimestamp: null
+  name: ex-ing
+  namespace: ex-ns
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: tomcat.gasbugs.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: ex-np-tomcat
+                port:
+                  number: 8080
+            path: /
+            pathType: Exact
+  tls:
+    - hosts:
+        - tomcat.gasbugs.com
+      secretName: ex-secret
+status:
+  loadBalancer: {}
+
+---
+# kubectl create svc nodeport ex-np-tomcat --tcp=80:8080 --namespace=ex-ns --dry-run=client -o yaml
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ex-np-tomcat
+  name: ex-np-tomcat
+  namespace: ex-ns
+spec:
+  ports:
+    - name: 80-8080
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: ex-tomcat
+  type: NodePort
+status:
+  loadBalancer: {} 
+  
+---
+# kubectl create deploy ex-deploy-tomcat --namespace=ex-ns --image=consol/tomcat-7.0 --replicas=2 --dry-run=client -o yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ex-tomcat
+  name: ex-deploy-tomcat
+  namespace: ex-ns
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ex-deploy-tomcat
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ex-deploy-tomcat
+    spec:
+      containers:
+        - image: consol/tomcat-7.0
+          name: ex-pod-tomcat
+          resources: {}
+status: {}
+
+```
+
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+-out ex-tls.crt \
+-keyout ex-tls.key \
+-subj "/CN=ex-tls"
+
+kubectl create secret tls ex-tls \
+--namespace default \
+--key ex-tls.key \
+--cert ex-tls.crt
+
+Examples:
+# Create a single ingress called 'simple' that directs requests to foo.com/bar to svc
+# svc1:8080 with a TLS secret "my-cert"
+kubectl create ingress simple --rule="foo.com/bar=svc1:8080,tls=my-cert"
+
+# Create a catch all ingress of "/path" pointing to service svc:port and Ingress Class as "otheringress"
+kubectl create ingress catch-all --class=otheringress --rule="/path=svc:port"
+
+# Create an ingress with two annotations: ingress.annotation1 and ingress.annotations2
+kubectl create ingress annotated --class=default --rule="foo.com/bar=svc:port" \
+--annotation ingress.annotation1=foo \
+--annotation ingress.annotation2=bla
+
+# Create an ingress with the same host and multiple paths
+kubectl create ingress multipath --class=default \
+--rule="foo.com/=svc:port" \
+--rule="foo.com/admin/=svcadmin:portadmin"
+
+# Create an ingress with multiple hosts and the pathType as Prefix
+kubectl create ingress ingress1 --class=default \
+--rule="foo.com/path*=svc:8080" \
+--rule="bar.com/admin*=svc2:http"
+
+# Create an ingress with TLS enabled using the default ingress certificate and different path types
+kubectl create ingress ingtls --class=default \
+--rule="foo.com/=svc:https,tls" \
+--rule="foo.com/path/subpath*=othersvc:8080"
+
+# Create an ingress with TLS enabled using a specific secret and pathType as Prefix
+kubectl create ingress ingsecret --class=default \
+--rule="foo.com/*=svc:8080,tls=secret1"
+
+# Create an ingress with a default backend
+kubectl create ingress ingdefault --class=default \
+--default-backend=defaultsvc:http \
+--rule="foo.com/*=svc:8080,tls=secret1"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```yaml
+# kubectl create ns ex-ns --dry-run=client -o yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: null
+  name: ex-ns
+spec: {}
+status: {}
+
+---
+# kubectl create ing ex-ing --rule="tomcat.gasbugs.com/=ex-np-tomcat:8080,tls=ex-tls" --annotation=nginx.ingress.kubernetes.io/ssl-redirect="true" --dry-run=client -o yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  creationTimestamp: null
+  name: ex-ing
+  namespace: ex-ns
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: tomcat.gasbugs.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: ex-np-tomcat
+                port:
+                  number: 8080
+            path: /
+            pathType: Exact
+  tls:
+    - hosts:
+        - tomcat.gasbugs.com
+      secretName: ex-secret
+status:
+  loadBalancer: {}
+
+---
+# kubectl create svc nodeport ex-np-tomcat --tcp=80:8080 --namespace=ex-ns --dry-run=client -o yaml
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ex-tomcat
+  name: ex-np-tomcat
+  namespace: ex-ns
+spec:
+  ports:
+    - name: 80-8080
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: ex-tomcat
+  type: NodePort
+status:
+  loadBalancer: {} 
+  
+---
+# kubectl create deploy ex-deploy-tomcat --namespace=ex-ns --image=consol/tomcat-7.0 --replicas=2 --dry-run=client -o yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ex-tomcat
+  name: ex-tomcat
+  namespace: ex-ns
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ex-tomcat
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ex-tomcat
+    spec:
+      containers:
+        - image: consol/tomcat-7.0
+          name: ex-tomcat
+          resources: {}
+status: {}
+
+```
+
