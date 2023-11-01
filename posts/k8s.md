@@ -147,7 +147,7 @@ sudo modprobe br_netfilter
 
 # 필요한 sysctl 파라미터를 설정하면, 재부팅 후에도 값이 유지된다.
 cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
-net.bridge.bridge-nf-call-iptables  = 1
+net.bridge.bri[service.md](service.md)dge-nf-call-iptables  = 1
 net.bridge.bridge-nf-call-ip6tables = 1
 net.ipv4.ip_forward                 = 1
 EOF
@@ -167,7 +167,7 @@ sudo kubeadm init
 
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config[service.md](service.md)
 ```
 
 마스터노드에서 kubeadm을 init하면 아래와 같은 토큰이 생성 및 조인 명령어를 표출해준다.   

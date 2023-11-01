@@ -17,6 +17,8 @@
 | 다중 커서      | Shift + Alt + click         | shift(⇧) + option(⌥) + click            |
 | 도움말 보기     | Alt + Enter                 | shift(⇧) + option(⌥) + click            |
 | 새 창에서 소스열기 | Shift + F4                  | shift(⇧) + F4                           |
+| http 요청실행 | ctrl + shift + F10          |                                         |
+
 
 
 | 마크다운 관련 기능    | windows             | mac                               |

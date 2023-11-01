@@ -335,16 +335,6 @@ status: {}
 
 ```
 
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
--out ex-tls.crt \
--keyout ex-tls.key \
--subj "/CN=ex-tls"
-
-kubectl create secret tls ex-tls \
---namespace default \
---key ex-tls.key \
---cert ex-tls.crt
-
 Examples:
 # Create a single ingress called 'simple' that directs requests to foo.com/bar to svc
 # svc1:8080 with a TLS secret "my-cert"
@@ -393,7 +383,15 @@ kubectl create ingress ingdefault --class=default \
 
 
 
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+-out ex-tls.crt \
+-keyout ex-tls.key \
+-subj "/CN=ex-tls"
 
+kubectl create secret tls ex-tls \
+--namespace default \
+--key ex-tls.key \
+--cert ex-tls.crt
 
 ```yaml
 # kubectl create ns ex-ns --dry-run=client -o yaml
@@ -419,6 +417,16 @@ spec:
   ingressClassName: nginx
   rules:
     - host: tomcat.gasbugs.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: ex-np-tomcat
+                port:
+                  number: 8080
+            path: /
+            pathType: Exact
+    - host: http-go.gasbugs.com
       http:
         paths:
           - backend:
