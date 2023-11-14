@@ -1,4 +1,3 @@
-
 > #### 윈도우와 맥 단축키 차이
 > [맥북 키명칭](https://support.apple.com/ko-kr/guide/mac-help/cpmh0011/mac)
 
@@ -17,9 +16,8 @@
 | 다중 커서      | Shift + Alt + click         | shift(⇧) + option(⌥) + click            |
 | 도움말 보기     | Alt + Enter                 | shift(⇧) + option(⌥) + click            |
 | 새 창에서 소스열기 | Shift + F4                  | shift(⇧) + F4                           |
-| http 요청실행 | ctrl + shift + F10          |                                         |
-
-
+| http 요청실행  | Ctrl + Shift + F10          |                                         |
+| 자동정렬       | Ctrl + Alt + L              |                                         |
 
 | 마크다운 관련 기능    | windows             | mac                               |
 |---------------|---------------------|-----------------------------------|
