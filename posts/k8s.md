@@ -164,6 +164,8 @@ sudo sysctl --system
 ```bash
 # master node
 sudo kubeadm init
+# root가 아닌 상태에서 해야함
+# ex) master01@master01:~$ sudo kubeadm init
 
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
