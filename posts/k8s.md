@@ -169,8 +169,7 @@ sudo kubeadm init
 
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown {user}:{group} $HOME/.kube/config
-# ex) sudo chown master01:master01 $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
 마스터노드에서 kubeadm을 init하면 아래와 같은 토큰이 생성 및 조인 명령어를 표출해준다.   
