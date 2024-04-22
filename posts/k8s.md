@@ -198,7 +198,6 @@ kubectl get nodes -o wide
 ```
 이렇게 하면 `STATUS`가 NotReady에서 Ready로 변경된 것을 볼 수 있다.
 
-
-
+cilium status시, 10250포트 timeout 에러나면 방화벽 열어주면된다.
 
       
