@@ -147,7 +147,7 @@ sudo modprobe br_netfilter
 
 # 필요한 sysctl 파라미터를 설정하면, 재부팅 후에도 값이 유지된다.
 cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
-net.bridge.bri[service.md](service.md)dge-nf-call-iptables  = 1
+net.bridge.bridge-nf-call-iptables  = 1
 net.bridge.bridge-nf-call-ip6tables = 1
 net.ipv4.ip_forward                 = 1
 EOF
