@@ -208,7 +208,7 @@ export default function Page() {
                 내용
               </label>
               <div className="mt-2">
-                <Editor className={'min-h-2000'} ref={editorRef} />
+                {/*<Editor className={'min-h-2000'} ref={editorRef} />*/}
               </div>
             </div>
           </div>
