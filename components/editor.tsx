@@ -1,4 +1,3 @@
-/*
 import { forwardRef, useImperativeHandle, useRef } from 'react'
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax'
 import { Editor as TuiEditor } from '@toast-ui/react-editor'
@@ -52,4 +51,3 @@ const Editor = forwardRef((props: editorProps, ref) => {
 })
 
 export default Editor
-*/
