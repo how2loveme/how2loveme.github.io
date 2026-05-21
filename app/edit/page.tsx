@@ -14,7 +14,7 @@ interface postProps {
   save: boolean
 }
 
-const Editor = loadable(() => import('../../components/editor'))
+// const Editor = loadable(() => import('../../components/editor'))
 
 export default function Page() {
   const iptSubjectRef = useRef<HTMLInputElement>()
