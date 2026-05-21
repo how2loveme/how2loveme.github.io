@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PDF Merger</title>
+    <link rel="preconnect" href="https://api.fontshare.com" />
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+    <style>
+        :root, [data-theme="light"] {
+            --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+            --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+            --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+            --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+            --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+            --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem; --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem; --space-12: 3rem; --space-16: 4rem;
+            --color-bg: #f7f6f2; --color-surface: #f9f8f5; --color-surface-2: #fbfbf9; --color-surface-offset: #f3f0ec; --color-border: #d4d1ca; --color-divider: #dcd9d5;
+            --color-text: #28251d; --color-text-muted: #7a7974; --color-text-faint: #bab9b4; --color-text-inverse: #f9f8f4;
+            --color-primary: #01696f; --color-primary-hover: #0c4e54; --color-primary-highlight: #cedcd8; --color-error: #a12c7b; --color-success: #437a22;
+            --radius-sm: 0.375rem; --radius-md: 0.5rem; --radius-lg: 0.75rem; --radius-xl: 1rem; --radius-full: 9999px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,.06); --shadow-md: 0 8px 24px rgba(0,0,0,.08);
+            --transition-interactive: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+            --font-body: 'Satoshi', 'Inter', sans-serif;
+            --font-display: 'Satoshi', 'Inter', sans-serif;
+        }
+        [data-theme="dark"] {
+            --color-bg: #171614; --color-surface: #1c1b19; --color-surface-2: #201f1d; --color-surface-offset: #1d1c1a; --color-border: #393836; --color-divider: #262523;
+            --color-text: #cdccca; --color-text-muted: #797876; --color-text-faint: #5a5957; --color-text-inverse: #2b2a28;
+            --color-primary: #4f98a3; --color-primary-hover: #227f8b; --color-primary-highlight: #313b3b; --color-error: #d163a7; --color-success: #6daa45;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,.2); --shadow-md: 0 12px 32px rgba(0,0,0,.35);
+        }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+        body{min-height:100dvh;font-family:var(--font-body);font-size:var(--text-base);line-height:1.6;background:var(--color-bg);color:var(--color-text)}
+        button,input{font:inherit;color:inherit}
+        button{cursor:pointer;border:none;background:none}
+        .shell{max-width:1100px;margin:0 auto;padding:var(--space-6)}
+        .topbar{display:flex;justify-content:space-between;align-items:center;gap:var(--space-4);margin-bottom:var(--space-8)}
+        .logo{display:flex;align-items:center;gap:var(--space-3);font-weight:700;font-size:var(--text-sm)}
+        .logo svg{width:28px;height:28px;color:var(--color-primary)}
+        .theme-toggle{display:grid;place-items:center;width:44px;height:44px;border-radius:var(--radius-full);background:var(--color-surface);border:1px solid var(--color-border);box-shadow:var(--shadow-sm)}
+        .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:var(--space-6);align-items:stretch}
+        .panel{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);box-shadow:var(--shadow-md)}
+        .hero-main{padding:var(--space-8)}
+        .eyebrow{display:inline-flex;gap:var(--space-2);align-items:center;padding:var(--space-2) var(--space-3);border-radius:var(--radius-full);background:var(--color-primary-highlight);color:var(--color-primary);font-size:var(--text-xs);font-weight:700;margin-bottom:var(--space-4)}
+        h1{font-family:var(--font-display);font-size:var(--text-xl);line-height:1.1;letter-spacing:-0.02em;margin-bottom:var(--space-4)}
+        .lead{color:var(--color-text-muted);max-width:58ch;margin-bottom:var(--space-6)}
+        .cta-row{display:flex;flex-wrap:wrap;gap:var(--space-3)}
+        .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);min-height:44px;padding:0 var(--space-4);border-radius:var(--radius-md);transition:all var(--transition-interactive);font-size:var(--text-sm);font-weight:700}
+        .btn-primary{background:var(--color-primary);color:var(--color-text-inverse)} .btn-primary:hover{background:var(--color-primary-hover)}
+        .btn-secondary{background:var(--color-surface-2);border:1px solid var(--color-border)}
+        .hero-side{padding:var(--space-6);display:flex;flex-direction:column;justify-content:space-between;background:linear-gradient(180deg,var(--color-surface),var(--color-surface-offset))}
+        .meta-grid{display:grid;gap:var(--space-3)}
+        .meta-card{padding:var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface-2);border:1px solid var(--color-border)}
+        .meta-card strong{display:block;font-size:var(--text-sm)} .meta-card span{font-size:var(--text-xs);color:var(--color-text-muted)}
+        .workspace{display:grid;grid-template-columns:1.4fr .9fr;gap:var(--space-6);margin-top:var(--space-6)}
+        .section{padding:var(--space-6)}
+        .section h2{font-size:var(--text-lg);margin-bottom:var(--space-2)}
+        .section p{color:var(--color-text-muted);margin-bottom:var(--space-4)}
+        .dropzone{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:var(--space-3);min-height:240px;border:2px dashed var(--color-border);border-radius:var(--radius-xl);background:var(--color-surface-2);padding:var(--space-8);text-align:center;transition:all var(--transition-interactive)}
+        .dropzone.dragover{border-color:var(--color-primary);background:color-mix(in srgb, var(--color-primary-highlight) 55%, var(--color-surface-2))}
+        .hint{font-size:var(--text-sm);color:var(--color-text-muted)}
+        .file-input{display:none}
+        .list{display:grid;gap:var(--space-3);margin-top:var(--space-5)}
+        .item{display:grid;grid-template-columns:auto 1fr auto;gap:var(--space-3);align-items:center;padding:var(--space-4);background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:var(--radius-lg)}
+        .handle{width:40px;height:40px;border-radius:var(--radius-md);background:var(--color-surface-offset);display:grid;place-items:center;font-size:18px}
+        .item-title{font-size:var(--text-sm);font-weight:700;word-break:break-all}
+        .item-meta{font-size:var(--text-xs);color:var(--color-text-muted)}
+        .item-actions{display:flex;gap:var(--space-2)}
+        .icon-btn{width:40px;height:40px;border-radius:var(--radius-md);background:var(--color-surface);border:1px solid var(--color-border)}
+        .controls{display:grid;gap:var(--space-4)}
+        .summary{display:grid;gap:var(--space-3);padding:var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface-2);border:1px solid var(--color-border)}
+        .summary-row{display:flex;justify-content:space-between;gap:var(--space-3);font-size:var(--text-sm)}
+        .status{padding:var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface-2);border:1px solid var(--color-border);font-size:var(--text-sm);color:var(--color-text-muted)}
+        .status.success{color:var(--color-success)} .status.error{color:var(--color-error)}
+        .steps{display:grid;gap:var(--space-3);margin-top:var(--space-4)}
+        .step{padding:var(--space-4);border-radius:var(--radius-lg);border:1px solid var(--color-border);background:var(--color-surface-2)}
+        .step strong{display:block;font-size:var(--text-sm);margin-bottom:var(--space-1)} .step span{font-size:var(--text-xs);color:var(--color-text-muted)}
+        .footer-note{margin-top:var(--space-6);font-size:var(--text-xs);color:var(--color-text-muted)}
+        .empty{padding:var(--space-6);text-align:center;color:var(--color-text-muted);border:1px dashed var(--color-border);border-radius:var(--radius-lg);background:var(--color-surface-2)}
+        @media (max-width: 900px){.hero,.workspace{grid-template-columns:1fr}.shell{padding:var(--space-4)}.hero-main,.hero-side,.section{padding:var(--space-5)}}
+        @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+    </style>
+</head>
+<body>
+<div class="shell">
+    <header class="topbar">
+        <div class="logo" aria-label="PDF Merger 로고">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <rect x="3" y="4" width="9" height="12" rx="2"></rect>
+                <rect x="12" y="8" width="9" height="12" rx="2"></rect>
+                <path d="M9 10h6"></path>
+            </svg>
+            <span>PDF Merger</span>
+        </div>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="다크 모드 전환"></button>
+    </header>
+
+    <section class="hero">
+        <div class="panel hero-main">
+            <div class="eyebrow">로컬 전용 · 서버 업로드 없음</div>
+            <h1>브라우저 안에서 바로<br>PDF를 합칩니다</h1>
+            <p class="lead">파일은 이 페이지를 연 기기 안에서만 처리됩니다. MacBook, Windows, Linux에서 브라우저와 Python만 있으면 같은 방식으로 쓸 수 있습니다.</p>
+            <div class="cta-row">
+                <button class="btn btn-primary" id="pickFilesBtn" type="button">PDF 선택</button>
+                <button class="btn btn-secondary" id="mergeBtnTop" type="button">바로 머지</button>
+            </div>
+        </div>
+        <aside class="panel hero-side">
+            <div class="meta-grid">
+                <div class="meta-card"><strong>처리 위치</strong><span>현재 브라우저 탭 내부</span></div>
+                <div class="meta-card"><strong>서버 저장</strong><span>없음</span></div>
+                <div class="meta-card"><strong>지원 환경</strong><span>Chrome, Edge, Safari 계열 권장</span></div>
+            </div>
+            <div class="footer-note">순서는 드래그로 바꾸고, 합친 결과는 즉시 다운로드됩니다.</div>
+        </aside>
+    </section>
+
+    <main class="workspace">
+        <section class="panel section">
+            <h2>파일 추가</h2>
+            <p>PDF 여러 개를 넣고, 순서를 바꾼 뒤, 하나의 파일로 저장하세요.</p>
+            <input id="fileInput" class="file-input" type="file" accept="application/pdf,.pdf" multiple />
+            <div id="dropzone" class="dropzone" role="button" tabindex="0" aria-label="PDF 파일 드롭 영역">
+                <div style="font-size:40px">📄</div>
+                <strong>여기에 PDF를 드래그하거나 클릭해서 선택</strong>
+                <div class="hint">여러 개 선택 가능 · 순서 변경 가능 · 로컬 처리</div>
+            </div>
+            <div id="fileList" class="list" aria-live="polite"></div>
+        </section>
+
+        <aside class="panel section controls">
+            <div>
+                <h2>머지 실행</h2>
+                <p>파일 개수와 총 용량을 확인한 뒤 합치면 됩니다.</p>
+            </div>
+            <div class="summary">
+                <div class="summary-row"><span>파일 수</span><strong id="fileCount">0</strong></div>
+                <div class="summary-row"><span>총 용량</span><strong id="totalSize">0 KB</strong></div>
+                <div class="summary-row"><span>출력 파일명</span><strong>merged.pdf</strong></div>
+            </div>
+            <button class="btn btn-primary" id="mergeBtn" type="button">PDF 머지 후 다운로드</button>
+            <button class="btn btn-secondary" id="clearBtn" type="button">목록 비우기</button>
+            <div id="status" class="status">아직 파일이 없습니다.</div>
+            <div>
+                <h2>사용 흐름</h2>
+                <div class="steps">
+                    <div class="step"><strong>1. PDF 선택</strong><span>드래그 앤 드롭 또는 파일 선택</span></div>
+                    <div class="step"><strong>2. 순서 정리</strong><span>위/아래 이동 버튼으로 병합 순서 변경</span></div>
+                    <div class="step"><strong>3. 다운로드</strong><span>브라우저에서 머지 후 merged.pdf 저장</span></div>
+                </div>
+            </div>
+        </aside>
+    </main>
+</div>
+
+<script>
+    (() => {
+        const root = document.documentElement;
+        const toggle = document.querySelector('[data-theme-toggle]');
+        let theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        const setIcon = () => {
+            toggle.innerHTML = theme === 'dark'
+                ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
+                : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+        };
+        root.setAttribute('data-theme', theme);
+        setIcon();
+        toggle.addEventListener('click', () => { theme = theme === 'dark' ? 'light' : 'dark'; root.setAttribute('data-theme', theme); setIcon(); });
+    })();
+
+    const { PDFDocument } = PDFLib;
+    const fileInput = document.getElementById('fileInput');
+    const pickFilesBtn = document.getElementById('pickFilesBtn');
+    const mergeBtn = document.getElementById('mergeBtn');
+    const mergeBtnTop = document.getElementById('mergeBtnTop');
+    const clearBtn = document.getElementById('clearBtn');
+    const dropzone = document.getElementById('dropzone');
+    const fileList = document.getElementById('fileList');
+    const fileCount = document.getElementById('fileCount');
+    const totalSize = document.getElementById('totalSize');
+    const statusBox = document.getElementById('status');
+
+    let files = [];
+
+    const bytesToSize = (bytes) => {
+        if (!bytes) return '0 KB';
+        const units = ['B', 'KB', 'MB', 'GB'];
+        let size = bytes;
+        let unit = 0;
+        while (size >= 1024 && unit < units.length - 1) { size /= 1024; unit += 1; }
+        return `${size.toFixed(unit === 0 ? 0 : 1)} ${units[unit]}`;
+    };
+
+    const setStatus = (message, type = '') => {
+        statusBox.className = `status${type ? ' ' + type : ''}`;
+        statusBox.textContent = message;
+    };
+
+    const refreshSummary = () => {
+        fileCount.textContent = String(files.length);
+        totalSize.textContent = bytesToSize(files.reduce((sum, f) => sum + f.size, 0));
+    };
+
+    const moveFile = (index, direction) => {
+        const next = index + direction;
+        if (next < 0 || next >= files.length) return;
+        [files[index], files[next]] = [files[next], files[index]];
+        renderFiles();
+    };
+
+    const removeFile = (index) => {
+        files.splice(index, 1);
+        renderFiles();
+        setStatus(files.length ? '파일 목록이 업데이트되었습니다.' : '아직 파일이 없습니다.');
+    };
+
+    const renderFiles = () => {
+        refreshSummary();
+        if (!files.length) {
+            fileList.innerHTML = '<div class="empty">아직 추가된 PDF가 없습니다.</div>';
+            return;
+        }
+        fileList.innerHTML = files.map((file, index) => `
+        <div class="item">
+          <div class="handle" aria-hidden="true">≡</div>
+          <div>
+            <div class="item-title">${file.name}</div>
+            <div class="item-meta">${bytesToSize(file.size)} · ${index + 1}번째 순서</div>
+          </div>
+          <div class="item-actions">
+            <button class="icon-btn" type="button" aria-label="위로 이동" onclick="window.__pdfMerger.move(${index}, -1)">↑</button>
+            <button class="icon-btn" type="button" aria-label="아래로 이동" onclick="window.__pdfMerger.move(${index}, 1)">↓</button>
+            <button class="icon-btn" type="button" aria-label="삭제" onclick="window.__pdfMerger.remove(${index})">✕</button>
+          </div>
+        </div>
+      `).join('');
+    };
+
+    const addFiles = (incoming) => {
+        const pdfs = [...incoming].filter(file => file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'));
+        if (!pdfs.length) {
+            setStatus('PDF 파일만 추가할 수 있습니다.', 'error');
+            return;
+        }
+        files.push(...pdfs);
+        renderFiles();
+        setStatus(`${pdfs.length}개의 PDF를 추가했습니다.`, 'success');
+    };
+
+    async function mergePdfs() {
+        if (files.length < 2) {
+            setStatus('머지하려면 PDF를 2개 이상 넣어주세요.', 'error');
+            return;
+        }
+        try {
+            setStatus('PDF를 합치는 중입니다...');
+            mergeBtn.disabled = true;
+            mergeBtnTop.disabled = true;
+
+            const mergedPdf = await PDFDocument.create();
+            for (const file of files) {
+                const bytes = await file.arrayBuffer();
+                const pdf = await PDFDocument.load(bytes);
+                const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                pages.forEach(page => mergedPdf.addPage(page));
+            }
+
+            const mergedBytes = await mergedPdf.save();
+            const blob = new Blob([mergedBytes], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'merged.pdf';
+            a.click();
+            URL.revokeObjectURL(url);
+            setStatus('머지가 완료되었습니다. merged.pdf 다운로드를 시작합니다.', 'success');
+        } catch (error) {
+            console.error(error);
+            setStatus('머지 중 오류가 발생했습니다. 손상된 PDF인지 확인해보세요.', 'error');
+        } finally {
+            mergeBtn.disabled = false;
+            mergeBtnTop.disabled = false;
+        }
+    }
+
+    pickFilesBtn.addEventListener('click', () => fileInput.click());
+    dropzone.addEventListener('click', () => fileInput.click());
+    dropzone.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); } });
+    fileInput.addEventListener('change', (e) => { addFiles(e.target.files); fileInput.value = ''; });
+    mergeBtn.addEventListener('click', mergePdfs);
+    mergeBtnTop.addEventListener('click', mergePdfs);
+    clearBtn.addEventListener('click', () => { files = []; renderFiles(); setStatus('목록을 비웠습니다.'); });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); dropzone.classList.add('dragover'); });
+    });
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); dropzone.classList.remove('dragover'); });
+    });
+    dropzone.addEventListener('drop', (e) => addFiles(e.dataTransfer.files));
+
+    window.__pdfMerger = { move: moveFile, remove: removeFile };
+    renderFiles();
+</script>
+</body>
+</html>
