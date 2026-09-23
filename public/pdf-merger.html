@@ -61,7 +61,7 @@
         .dropzone{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:var(--space-3);min-height:240px;border:2px dashed var(--color-border);border-radius:var(--radius-xl);background:var(--color-surface-2);padding:var(--space-8);text-align:center;transition:all var(--transition-interactive)}
         .dropzone.dragover{border-color:var(--color-primary);background:color-mix(in srgb, var(--color-primary-highlight) 55%, var(--color-surface-2))}
         .hint{font-size:var(--text-sm);color:var(--color-text-muted)}
-        .file-input{display:none}
+        .file-input{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
         .list{display:grid;gap:var(--space-3);margin-top:var(--space-5)}
         .item{display:grid;grid-template-columns:auto 1fr auto;gap:var(--space-3);align-items:center;padding:var(--space-4);background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:var(--radius-lg)}
         .handle{width:40px;height:40px;border-radius:var(--radius-md);background:var(--color-surface-offset);display:grid;place-items:center;font-size:18px}
@@ -125,7 +125,7 @@
             <div id="dropzone" class="dropzone" role="button" tabindex="0" aria-label="PDF 파일 드롭 영역">
                 <div style="font-size:40px">📄</div>
                 <strong>여기에 PDF를 드래그하거나 클릭해서 선택</strong>
-                <div class="hint">여러 개 선택 가능 · 순서 변경 가능 · 로컬 처리</div>
+                <div class="hint">여러 개 선택 가능 · 붙여넣기 가능 · 모바일은 '파일 앱'에서 선택</div>
             </div>
             <div id="fileList" class="list" aria-live="polite"></div>
         </section>
@@ -287,6 +287,10 @@
 
     pickFilesBtn.addEventListener('click', () => fileInput.click());
     dropzone.addEventListener('click', () => fileInput.click());
+    document.addEventListener('paste', (e) => {
+        const pasted = e.clipboardData && e.clipboardData.files;
+        if (pasted && pasted.length) { e.preventDefault(); addFiles(pasted); }
+    });
     dropzone.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); } });
     fileInput.addEventListener('change', (e) => { addFiles(e.target.files); fileInput.value = ''; });
     mergeBtn.addEventListener('click', mergePdfs);
